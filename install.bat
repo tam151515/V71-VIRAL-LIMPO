@@ -1,10 +1,10 @@
 @echo off
-REM ARQV30 Enhanced v2.0 ULTRA-ROBUSTO - Script de Instalação Windows
-REM Execute este arquivo para instalar todas as dependências
+REM ARQV30 Enhanced v3.0 ULTRA-ROBUSTO - Script de Instalação Windows
+REM Execute este arquivo para instalar todas as dependências (V70V1 + Viral)
 
 echo ========================================
-echo ARQV30 Enhanced v2.0 ULTRA-ROBUSTO - Instalação
-echo Análise Ultra-Detalhada de Mercado
+echo ARQV30 Enhanced v3.0 ULTRA-ROBUSTO - Instalação
+echo Análise Ultra-Detalhada de Mercado + Módulo Viral
 echo ========================================
 echo.
 
@@ -13,7 +13,7 @@ python --version >nul 2>&1
 if errorlevel 1 (
     echo ❌ ERRO: Python não encontrado!
     echo.
-    echo Por favor, instale Python 3.11+ de https://python.org    
+    echo Por favor, instale Python 3.11+ de https://python.org      
     echo Certifique-se de marcar "Add Python to PATH" durante a instalação.
     echo.
     pause
@@ -58,15 +58,27 @@ echo Isso pode levar alguns minutos...
 echo.
 pip install -r requirements.txt
 pip install flask scrapy playwright
-pip install -r requirements_document_analysis.txt
-playwright install
 
+REM === CORREÇÃO PLAYWRIGHT ===
+echo 🔄 Instalando Playwright e navegadores...
+pip install playwright
+playwright install-deps
+playwright install chromium firefox webkit
+playwright install
+pip install aiohttp aiofiles
+pip install aiohttp aiofiles playwright
+playwright install-deps 
+playwright install      
 if errorlevel 1 (
-    echo ❌ ERRO: Falha ao instalar dependências!
-    echo Verifique sua conexão com a internet e tente novamente.
+    echo ❌ ERRO: Falha ao instalar Playwright ou navegadores!
+    echo Verifique se o Python esta funcionando corretamente.
     pause
     exit /b 1
 )
+REM === FIM CORREÇÃO PLAYWRIGHT ===
+
+pip install selenium
+pip install beautifulsoup4 requests python-dotenv
 
 REM === MODIFICAÇÃO CRÍTICA: Instala o modelo spaCy pt_core_news_sm ===
 echo 🔄 Instalando modelo spaCy pt_core_news_sm...
@@ -86,10 +98,89 @@ REM === FIM DA MODIFICAÇÃO ===
 
 REM Instala dependências adicionais para web scraping (se não estiverem no requirements.txt principal)
 echo 🔄 Instalando dependências adicionais (se necessário)...
-pip install beautifulsoup4 lxml html5lib
+pip install beautifulsoup4 lxml html5lib aiohttp
 if errorlevel 1 (
     echo ⚠️ AVISO: Algumas dependências adicionais falharam.
 )
+
+REM === INSTALAÇÃO DO MÓDULO VIRAL ===
+echo.
+echo ========================================
+echo 🔥 INSTALANDO MÓDULO VIRAL
+echo ========================================
+echo.
+
+REM Verifica se Node.js está instalado
+node --version >nul 2>&1
+if errorlevel 1 (
+    echo ❌ ERRO: Node.js não encontrado!
+    echo.
+    echo Por favor, instale Node.js 18+ de https://nodejs.org
+    echo O módulo viral requer Node.js para funcionar.
+    echo.
+    echo ⚠️ CONTINUANDO SEM MÓDULO VIRAL...
+    echo O sistema funcionará com fallback automático.
+    echo.
+    goto SKIP_VIRAL
+) else (
+    echo ✅ Node.js encontrado:
+    node --version
+    echo.
+)
+
+REM Verifica se npm está disponível
+npm --version >nul 2>&1
+if errorlevel 1 (
+    echo ❌ ERRO: npm não encontrado!
+    echo ⚠️ CONTINUANDO SEM MÓDULO VIRAL...
+    goto SKIP_VIRAL
+) else (
+    echo ✅ npm encontrado:
+    npm --version
+    echo.
+)
+
+REM Instala dependências do viral
+echo 🔄 Instalando dependências do módulo viral...
+cd viral
+if errorlevel 1 (
+    echo ❌ ERRO: Diretório viral não encontrado!
+    echo ⚠️ CONTINUANDO SEM MÓDULO VIRAL...
+    cd ..
+    goto SKIP_VIRAL
+)
+
+echo Executando npm install...
+npm install
+if errorlevel 1 (
+    echo ❌ ERRO: Falha ao instalar dependências do viral!
+    echo ⚠️ CONTINUANDO SEM MÓDULO VIRAL...
+    cd ..
+    goto SKIP_VIRAL
+) else (
+    echo ✅ Dependências do viral instaladas com sucesso!
+)
+
+REM Testa build do viral
+echo 🧪 Testando build do módulo viral...
+npm run build >nul 2>&1
+if errorlevel 1 (
+    echo ⚠️ AVISO: Build do viral falhou, mas dependências estão instaladas.
+) else (
+    echo ✅ Build do viral OK!
+)
+
+cd ..
+echo ✅ Módulo viral configurado com sucesso!
+echo.
+goto CONTINUE_INSTALL
+
+:SKIP_VIRAL
+echo ⚠️ Módulo viral não instalado - sistema usará fallback automático.
+echo.
+
+:CONTINUE_INSTALL
+REM === FIM INSTALAÇÃO VIRAL ===
 
 REM Cria diretórios necessários
 echo 🔄 Criando estrutura de diretórios ULTRA-ROBUSTA...
@@ -97,6 +188,10 @@ if not exist "src\uploads" mkdir src\uploads
 if not exist "src\static\images" mkdir src\static\images
 if not exist "src\cache" mkdir src\cache
 if not exist "src\logs" mkdir src\logs
+if not exist "analyses_data" mkdir analyses_data
+if not exist "analyses_data\viral_images" mkdir analyses_data\viral_images
+if not exist "relatorios_intermediarios" mkdir relatorios_intermediarios
+if not exist "relatorios_intermediarios\workflow" mkdir relatorios_intermediarios\workflow
 echo.
 
 REM Testa a instalação
@@ -159,9 +254,9 @@ echo 🚀 Próximos passos:
 echo.
 echo 1. ✅ Arquivo .env já configurado com suas chaves
 echo.
-echo 2. Execute run.bat para iniciar a aplicação
+echo 2. Execute run.bat para iniciar V70V1 + Módulo Viral
 echo.
-echo 3. Acesse http://localhost:5000 no seu navegador
+echo 3. O navegador abrirá automaticamente em http://localhost:5000
 echo.
 echo 4. Teste com uma análise simples primeiro
 echo.
@@ -180,5 +275,6 @@ echo - WebSailor para pesquisa web
 echo - HuggingFace para análise complementar
 echo - Google Search para dados reais
 echo - Jina AI para extração de conteúdo
+echo - 🔥 MÓDULO VIRAL para redes sociais
 echo.
 pause

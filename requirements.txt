@@ -34,7 +34,7 @@ newspaper3k>=0.2.8
 
 # Data Processing & Analysis
 pandas>=2.0.0
-numpy>=1.24.0
+numpy>=2.3.2
 scikit-learn>=1.3.0
 statsmodels>=0.14.0
 
@@ -91,7 +91,7 @@ seaborn>=0.12.0
 
 # Advanced Analytics and Prediction
 pandas>=2.0.0
-numpy>=1.24.0
+numpy>=2.3.2
 scikit-learn>=1.3.0
 statsmodels>=0.14.0
 
@@ -153,3 +153,5 @@ playwright
 # Scrapy and Splash for web scraping
 scrapy>=2.11.0
 scrapy-splash>=0.8.0
+aiohttp
+aiofiles
